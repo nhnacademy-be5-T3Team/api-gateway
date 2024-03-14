@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @GetMapping("/")
     public String test() {
-        return "v0.0.2";
+        return "v0.0.3";
     }
 }
