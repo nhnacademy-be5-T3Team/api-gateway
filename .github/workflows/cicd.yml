@@ -20,6 +20,9 @@ jobs:
     - name: build 
       run: mvn package
 
+    - name : sonar qube
+      run: mvn sonar:sonar -Dsonar.projectKey=${{ SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ SONAR_HOST_URL }} -Dsonar.login=${{ SONAR_LOGIN_TOKEN }}
+
     - name : delivery
       uses: appleboy/scp-action@master
       with:
