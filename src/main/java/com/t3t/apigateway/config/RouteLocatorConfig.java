@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 public class RouteLocatorConfig {
     /**
      * 각 서비스로 라우팅 및 로드밸런싱 설정을 위한 빈<br>
@@ -18,23 +17,25 @@ public class RouteLocatorConfig {
      * @author woody35545(구건모)
      *
      */
-    private final JwtUtils jwtUtils;
-    private final TokenService tokenService;
 
     @Bean
-    public RouteLocator routeLocator(RouteLocatorBuilder builder) {
+    public RouteLocator routeLocator(RouteLocatorBuilder builder, JwtFilter jwtFilter) {
+        /*secrets -> open*/
         return builder.routes()
-                .route("bookstore-service-secrets", r-> r.path("/secrets/bookstore/**")
-                        .filters(f->f.filter(new JwtFilter(jwtUtils, tokenService)))
+                // 추후 수정 필요
+                // bookstore/members/** 이런식으로 하나하나 찾아서 filter 걸기
+                .route("bookstore-service-secrets", r-> r.path("/at/bookstore/**")
+                        .filters(f->f.filter(jwtFilter))
                         .uri("lb://BOOKSTORE-SERVICE"))
-                .route("bookstore-service", r -> r.path("/bookstore/**")
-                        .filters(f -> f.rewritePath("/bookstore/(?<segment>.*)", "/${segment}"))
+                .route("bookstore-service", r -> r.path("/t3t/bookstore/**")
+                        .filters(f -> f.rewritePath("/t3t/bookstore/(?<segment>.*)", "/${segment}"))
                         .uri("lb://BOOKSTORE-SERVICE"))
-                .route("auth-service-secrets", r -> r.path("/secrets/auth/**")
-                        .filters(f->f.filter(new JwtFilter(jwtUtils, tokenService)))
+                // 추후 수정 필요
+                .route("auth-service-secrets", r -> r.path("/at/auth/**")
+                        .filters(f->f.filter(jwtFilter))
                         .uri("lb://AUTH-SERVICE"))
-                .route("auth-service", r -> r.path("/auth/**")
-                        .filters(f -> f.rewritePath("/auth/(?<segment>.*)", "/${segment}"))
+                .route("auth-service", r -> r.path("/t3t/auth/**")
+                        .filters(f -> f.rewritePath("/t3t/auth/(?<segment>.*)", "/${segment}"))
                         .uri("lb://AUTH-SERVICE"))
                 .route("coupon-service", r -> r.path("/coupon/**")
                         .filters(f -> f.rewritePath("/coupon/(?<segment>.*)", "/${segment}"))

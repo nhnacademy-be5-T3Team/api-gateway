@@ -33,8 +33,8 @@ public class JwtFilter implements GatewayFilter {
         String url = exchange.getRequest().getURI().getPath();
         String access = null;
 
-        if (!url.startsWith("/secrets")) {
-            chain.filter(exchange);
+        chain.filter(exchange);
+        if (!url.startsWith("/at")) {
         }
         if (Objects.isNull(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))){
             throw new TokenNotExistExceptions("Access Token Not Exists");
@@ -79,7 +79,7 @@ public class JwtFilter implements GatewayFilter {
         }
         // 경로 재작성 Logic
         // "/secrets/*/*"중 최하위 url만 전달
-        if (url.startsWith("/secrets")){
+        if (url.startsWith("/at")){
             String[] strs = url.split("/");
             String newPath = "/" + strs[strs.length-1];
             ServerHttpRequest newRequest = exchange.getRequest().mutate().path(newPath).build();
