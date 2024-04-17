@@ -63,14 +63,5 @@ public class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandl
         }else {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        /*if (throwable instanceof ResponseStatusException) {
-            return ((ResponseStatusException) throwable).getStatusCode();
-        } else if (throwable instanceof CustomRequestAuthException) {
-            return HttpStatus.UNAUTHORIZED;
-        } else if (throwable instanceof RateLimitRequestException) {
-            return HttpStatus.TOO_MANY_REQUESTS;
-        } else {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }*/
     }
 }

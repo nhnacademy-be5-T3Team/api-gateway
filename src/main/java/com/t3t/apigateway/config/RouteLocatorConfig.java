@@ -1,9 +1,11 @@
 package com.t3t.apigateway.config;
 
 import com.t3t.apigateway.common.JwtUtils;
+import com.t3t.apigateway.filter.GlobalHttpReIssueFilter;
 import com.t3t.apigateway.filter.JwtFilter;
 import com.t3t.apigateway.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +19,6 @@ public class RouteLocatorConfig {
      * @author woody35545(구건모)
      *
      */
-
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder, JwtFilter jwtFilter) {
         /*secrets -> open*/
