@@ -1,12 +1,9 @@
 package com.t3t.apigateway.filter;
 
-import com.t3t.apigateway.common.JwtUtils;
-import com.t3t.apigateway.exception.BlackListTokenExceptions;
-import com.t3t.apigateway.exception.TokenExpiredExceptions;
+import com.t3t.apigateway.common.JwtUtils;;
 import com.t3t.apigateway.exception.TokenNotAuthenticatedExceptions;
 import com.t3t.apigateway.exception.TokenNotExistExceptions;
 import com.t3t.apigateway.service.TokenService;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -20,68 +17,51 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * 인증이 필요한 url로 요청이 들어온 경우, 인가처리를 진행하는 필터
+ * @author joohyun1996(이주현)
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtFilter implements GatewayFilter {
     private final JwtUtils jwtUtils;
-    private final TokenService tokenService;
 
+    /**
+     * 토큰의 signature, expiration등을 확인하는 필터
+     * 요청이 합당하면 경로 재지정을 수행한다
+     * @param exchange,chain
+     * @author joohyun1996(이주현)
+     */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String url = exchange.getRequest().getURI().getPath();
-        String access = null;
 
-        chain.filter(exchange);
+        // 인가 처리가 필요없는 경우는 필터링
         if (!url.startsWith("/at")) {
+            return chain.filter(exchange);
         }
+
+        // access 토큰이 필요한데 없는 경우는 에러 발생
+        // 글로벌 필터에서 이미 다 처리했지만, 한번 더 처리 진행
         if (Objects.isNull(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))){
             throw new TokenNotExistExceptions("Access Token Not Exists");
         }
 
-        access = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).trim().split(" ")[1];
+        String access = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).trim().split(" ")[1];
 
-        if (Objects.isNull(access)) {
-            throw new TokenNotExistExceptions("Access Token Not Exists!");
-        }
+        // token이 서버가 발행한게 맞는지, 혹은 만료되지 않았는지 확인
         if (jwtUtils.getValidation(access)) {
             throw new TokenNotAuthenticatedExceptions("Not Authenticated Token");
         }
-        if (tokenService.findBlackList(access)){
-            throw new BlackListTokenExceptions("Token Already Expired");
-        }
-        try {
-            if (jwtUtils.isExpired(access) == false) {
-                // 토큰의 만료시간이 5분 이하인 경우 refresh로 자동 재전송
-                if (jwtUtils.checkReIssue(access) && !tokenService.getRefreshByUUID(jwtUtils.getUUID(access)).getToken().isEmpty()) {
-                    ServerHttpRequest request = exchange.getRequest().mutate() // exchange.mutate()를 사용해서 요청, 응답 변경
-                            .path("/refresh")
-                            .build();
-                    return chain.filter(exchange.mutate().request(request).build());
-                }
-            }
-        } catch (ExpiredJwtException e) {
-            // access, refresh 둘다 만료된 경우
-            if (!tokenService.refreshTokenExists(e.getClaims().get("uuid", String.class))){
-                throw new TokenExpiredExceptions("Cannot Reissue Access Token");
-            }
-            // 토큰이 만료되었는데 Refresh토큰이 있는 경우
-            if (Objects.nonNull(tokenService.getRefreshByUUID(e.getClaims().get("uuid", String.class)))) {
-                ServerHttpRequest request = exchange.getRequest().mutate()
-                        .path("/refresh")
-                        .build();
-                return chain.filter(exchange.mutate().request(request).build());
-            } else {
-                // 토큰이 만료되었는데 Refresh 토큰도 만료된 경우
-                throw new TokenExpiredExceptions("Token Expired!");
-            }
-        }
+        
         // 경로 재작성 Logic
-        // "/secrets/*/*"중 최하위 url만 전달
+        // "/at/serviceName/*/*" -> "/*/*"
         if (url.startsWith("/at")){
             String[] strs = url.split("/");
-            String newPath = "/" + strs[strs.length-1];
+            String newPath = "/" + String.join("/", Arrays.copyOfRange(strs, 3, strs.length));
             ServerHttpRequest newRequest = exchange.getRequest().mutate().path(newPath).build();
             return chain.filter(exchange.mutate().request(newRequest).build());
         }

@@ -1,9 +1,6 @@
 package com.t3t.apigateway.common;
 
-import com.t3t.apigateway.exception.BlackListTokenExceptions;
-import com.t3t.apigateway.exception.TokenExpiredExceptions;
-import com.t3t.apigateway.exception.TokenNotAuthenticatedExceptions;
-import com.t3t.apigateway.exception.TokenNotExistExceptions;
+import com.t3t.apigateway.exception.*;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -20,6 +17,10 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Gateway Filter에서 발생하는 예외를 handling 하는클래스
+ * @author joohyun1996(이주현)
+ */
 @Component
 public class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
     public CustomGlobalExceptionHandler(final ErrorAttributes errorAttributes,
@@ -36,7 +37,12 @@ public class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandl
         return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
     }
 
-    // error response 시 status와 message만 반환하도록 custom
+    /**
+     * error response 시 status와 message만 반환하도록 custom
+     * @param request
+     * @return StatusCode : message
+     * @author joohyun1996(이주현)
+     */
     private Mono<ServerResponse> renderErrorResponse(ServerRequest request){
         ErrorAttributeOptions options = ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE);
         Map<String, Object> errorPropertiesMap = getErrorAttributes(request, options);
@@ -51,6 +57,11 @@ public class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandl
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(BodyInserters.fromObject(responseMap));
     }
+
+    /**
+     * 에러의 종류에 따라 status 설정
+     * @author joohyun1996(이주현)
+     */
     private HttpStatus determineHttpStatus(Throwable throwable) {
         if (throwable instanceof TokenNotExistExceptions){
             return HttpStatus.UNAUTHORIZED;
@@ -63,14 +74,5 @@ public class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandl
         }else {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        /*if (throwable instanceof ResponseStatusException) {
-            return ((ResponseStatusException) throwable).getStatusCode();
-        } else if (throwable instanceof CustomRequestAuthException) {
-            return HttpStatus.UNAUTHORIZED;
-        } else if (throwable instanceof RateLimitRequestException) {
-            return HttpStatus.TOO_MANY_REQUESTS;
-        } else {
-            return HttpStatus.INTERNAL_SERVER_ERROR;
-        }*/
     }
 }

@@ -18,6 +18,10 @@ import java.util.Base64;
 import java.security.Key;
 import java.util.Date;
 
+/**
+ * JWT 토큰 발행 및 검증을 위한 클래스
+ * @author joohyun1996(이주현)
+ */
 @Component
 public class JwtUtils {
     private Key key;
@@ -64,6 +68,11 @@ public class JwtUtils {
         }
     }
 
+    /**
+     * 토큰의 만료시간이 5분 전인지 확인을 위한 메소드
+     * @param token
+     * @return boolean
+     */
     public Boolean checkReIssue(String token) {
         Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.systemDefault());

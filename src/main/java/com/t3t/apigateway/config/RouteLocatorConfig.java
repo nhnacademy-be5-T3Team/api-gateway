@@ -1,9 +1,11 @@
 package com.t3t.apigateway.config;
 
 import com.t3t.apigateway.common.JwtUtils;
+import com.t3t.apigateway.filter.GlobalHttpReIssueFilter;
 import com.t3t.apigateway.filter.JwtFilter;
 import com.t3t.apigateway.service.TokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +16,10 @@ public class RouteLocatorConfig {
     /**
      * 각 서비스로 라우팅 및 로드밸런싱 설정을 위한 빈<br>
      * @apiNote rewrite filter 를 통해 서비스 구분에 사용되는 경로를 제거하여 서비스로 라우팅한다.
-     * @author woody35545(구건모)
+     * @apiNote JWT token을 필요로 하는 api의 경우 url로 구분하고, 해당 토큰을 검사하는 filter를 추가하였다
+     * @author woody35545(구건모), joohyun1996(이주현)
      *
      */
-
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder, JwtFilter jwtFilter) {
         /*secrets -> open*/
