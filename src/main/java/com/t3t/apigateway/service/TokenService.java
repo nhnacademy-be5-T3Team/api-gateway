@@ -8,7 +8,10 @@ import com.t3t.apigateway.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * blacklist와 refresh 토큰을 redis에서 가져와 crud를 진행하는 서비스
+ * @author joohyun1996(이주현)
+ */
 @Service
 @RequiredArgsConstructor
 public class TokenService {
