@@ -1,4 +1,4 @@
-package com.t3t.apigateway.keymanager.properties.model.response;
+package com.t3t.apigateway.keymanager.model.response;
 
 import lombok.Getter;
 
