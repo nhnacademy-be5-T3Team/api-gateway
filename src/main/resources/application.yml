@@ -27,3 +27,29 @@ eureka:
 t3t:
     secret:
         key: ${jwtSecretKey}
+
+    secretKeyManager:
+        certKeyPath: ${secretKeyManagerCertKeyPath}
+        certKeyType: ${secretKeyManagerCertKeyType}
+        appKey: ${secretKeyManagerAppKey}
+        password: ${secretKeyManagerPassword}
+
+        secrets:
+            databaseName:
+                keyId: "e3203972cbf04433b90c752f695d5736"
+            databaseServerIpAddress:
+                keyId: "62911d2c30064812b2b2c97a8dd90782"
+            databaseServerPort:
+                keyId: "48e191996aa748938a1edb62652336f4"
+            databaseServerUsername:
+                keyId: "f008c1d3f87f4f88ae57bd03871eb10d"
+            databaseServerPassword:
+                keyId: "8a65684780224384a681c3e9035ca7d6"
+            jwtSecretKey:
+                keyId: "e4f4d4a87ccd49e594f03dffee9fa58d"
+            redisServerIpAddress:
+                keyId: "10ee8b6140cc49ffa9e7a7c8a2924a3e"
+            redisServerPort:
+                keyId: "0582f8b117604b7d86e9f3ff26931cde"
+            redisServerPassword:
+                keyId: "ec1eb8e0706e402cbec8487cbcb86564"
