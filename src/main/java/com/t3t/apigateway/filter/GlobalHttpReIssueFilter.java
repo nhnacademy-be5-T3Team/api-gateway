@@ -17,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -66,7 +65,13 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
                     WebClient webClient = WebClient.create();
                     Mono<ClientResponse> responseMono = webClient.post()
                             // 추후 profile별 url로 전송되게 해야함
-                            .uri("http://localhost:8084/refresh")
+                            .uri(uriBuilder -> uriBuilder
+                                    .scheme("http")
+                                    .host("localhost")
+                                    .port(8084)
+                                    .path("/refresh")
+                                    .query(exchange.getRequest().getURI().getQuery()) // 이전 요청의 쿼리 파라미터 추가
+                                    .build())
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + access)
                             .exchange();
 
@@ -75,7 +80,7 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
                         String receivedNewToken = resp.headers().asHttpHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
                         ServerHttpRequest originalReq = finalExchange.getRequest().mutate()
-                                .uri(URI.create(originalUrl))
+                                .uri(finalExchange.getRequest().getURI())
                                 .header(HttpHeaders.AUTHORIZATION, receivedNewToken)
                                 .build();
 
@@ -92,7 +97,13 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
 
                 WebClient webClient = WebClient.create();
                 Mono<ClientResponse> responseMono = webClient.post()
-                        .uri("http://localhost:8084/refresh")
+                        .uri(uriBuilder -> uriBuilder
+                                .scheme("http")
+                                .host("localhost")
+                                .port(8084)
+                                .path("/refresh")
+                                .query(exchange.getRequest().getURI().getQuery()) // 이전 요청의 쿼리 파라미터 추가
+                                .build())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + access)
                         .exchange();
 
@@ -101,7 +112,7 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
                     String receivedNewToken = resp.headers().asHttpHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
                     ServerHttpRequest originalReq = finalExchange.getRequest().mutate()
-                            .uri(URI.create(originalUrl))
+                            .uri(finalExchange.getRequest().getURI())
                             .header(HttpHeaders.AUTHORIZATION, receivedNewToken)
                             .build();
 
