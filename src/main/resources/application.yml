@@ -13,6 +13,8 @@ spring:
         port: ${redisPort}
         password: ${redisPassword}
         database: ${redisDatabase}
+    auth:
+        host: ${authHost}
 
 eureka:
     instance:
