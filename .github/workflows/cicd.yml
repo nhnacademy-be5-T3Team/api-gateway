@@ -2,7 +2,9 @@ name: CI / CD
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "master", "develop" ]
+  pull_request:
+    branches: [ "master", "develop" ]
     
 jobs:
   ci-cd:
@@ -10,6 +12,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Prepare secure key manager certKey file
+      run:
+        echo ${{ secrets.SECURE_KEY_MANAGER_CERT_KEY }} > t3team-skm-cert.txt
+        mkdir src/main/resources/key
+        base64 -d t3team-skm-cert.txt > src/main/resources/key/t3team-skm-cert.p12
+
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
@@ -18,7 +26,7 @@ jobs:
         cache: maven
         
     - name: build 
-      run: mvn package
+      run: ${{ secrets.MAVEN_OPTION_PACKAGES }}
 
     - name : sonar qube
       run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN_TOKEN }}
@@ -42,4 +50,4 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script_stop: true
-        script: "kill $(lsof -i:8080 -t) & nohup java -jar ~/target/*.jar > ~/nohup.log 2>&1 &"
+        script: "kill $(lsof -i:9090 -t) & nohup java -jar ~/target/*.jar > ~/nohup.log 2>&1 &"

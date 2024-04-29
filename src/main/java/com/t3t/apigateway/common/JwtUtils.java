@@ -2,20 +2,20 @@ package com.t3t.apigateway.common;
 
 import com.t3t.apigateway.exception.TokenNotAuthenticatedExceptions;
 import com.t3t.apigateway.exception.TokenNotConsistedProperly;
+import com.t3t.apigateway.keymanager.properties.SecretKeyProperties;
+import com.t3t.apigateway.keymanager.service.SecretKeyManagerService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
-
-import java.security.Key;
 import java.util.Date;
 
 /**
@@ -26,7 +26,8 @@ import java.util.Date;
 public class JwtUtils {
     private Key key;
 
-    public JwtUtils(@Value("${t3t.secret.key}") String secret) {
+    public JwtUtils(SecretKeyManagerService secretKeyManagerService, SecretKeyProperties secretKeyProperties) {
+        String secret = secretKeyManagerService.getSecretValue(secretKeyProperties.getJwtSecretKeyId());
         byte[] byteSecretKey = Base64.getDecoder().decode(secret);
         key = Keys.hmacShaKeyFor(byteSecretKey);
     }

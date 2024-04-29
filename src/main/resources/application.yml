@@ -8,11 +8,6 @@ spring:
     profiles:
         active: dev
 
-    redis:
-        host: ${redisHost}
-        port: ${redisPort}
-        password: ${redisPassword}
-        database: ${redisDatabase}
     auth:
         host: ${authHost}
 
@@ -27,9 +22,6 @@ eureka:
 
 
 t3t:
-    secret:
-        key: ${jwtSecretKey}
-
     secretKeyManager:
         certKeyPath: ${secretKeyManagerCertKeyPath}
         certKeyType: ${secretKeyManagerCertKeyType}
