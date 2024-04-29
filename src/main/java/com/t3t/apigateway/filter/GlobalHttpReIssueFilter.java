@@ -6,6 +6,7 @@ import com.t3t.apigateway.exception.TokenNotExistExceptions;
 import com.t3t.apigateway.service.TokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -30,6 +31,8 @@ import java.util.Objects;
 public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
     private final JwtUtils jwtUtils;
     private final TokenService tokenService;
+    @Value("${spring.auth.host}")
+    private String host;
 
     /**
      * 요청에 있는 HttpHeader.AUTHORIZATION값으로 필터링
@@ -67,7 +70,7 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
                             // 추후 profile별 url로 전송되게 해야함
                             .uri(uriBuilder -> uriBuilder
                                     .scheme("http")
-                                    .host("localhost")
+                                    .host(host)
                                     .port(8084)
                                     .path("/refresh")
                                     .query(exchange.getRequest().getURI().getQuery()) // 이전 요청의 쿼리 파라미터 추가
@@ -99,7 +102,7 @@ public class GlobalHttpReIssueFilter implements GlobalFilter, Ordered {
                 Mono<ClientResponse> responseMono = webClient.post()
                         .uri(uriBuilder -> uriBuilder
                                 .scheme("http")
-                                .host("localhost")
+                                .host(host)
                                 .port(8084)
                                 .path("/refresh")
                                 .query(exchange.getRequest().getURI().getQuery()) // 이전 요청의 쿼리 파라미터 추가
