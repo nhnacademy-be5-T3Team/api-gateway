@@ -1,8 +1,11 @@
 package com.t3t.apigateway.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.t3t.apigateway.keymanager.properties.SecretKeyProperties;
+import com.t3t.apigateway.keymanager.service.SecretKeyManagerService;
+import com.t3t.apigateway.property.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -13,32 +16,35 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
-    @Value("${spring.redis.host}")
-    private String host;
+    @Bean
+    public RedisProperties redisProperties(SecretKeyManagerService secretKeyManagerService,
+                                           SecretKeyProperties secretKeyProperties,
+                                           Environment environment){
 
-    @Value("${spring.redis.port}")
-    private int port;
+        String activeProfile = environment.getActiveProfiles()[0];
 
-    @Value("${spring.redis.database}")
-    private int database;
-
-    @Value("${spring.redis.password}")
-    private String password;
+        return RedisProperties.builder()
+                .host(secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisIpAddressKeyId()))
+                .port(Integer.valueOf(secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisPortKeyId())))
+                .password(secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisPasswordKeyId()))
+                .database(20)
+                .build();
+    }
 
     @Bean
-    public RedisConnectionFactory redisConnectionFactory(){
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(host, port);
-        configuration.setPassword(password);
-        configuration.setDatabase(database);
+    public RedisConnectionFactory redisConnectionFactory(RedisProperties redisProperties){
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
+        configuration.setPassword(redisProperties.getPassword());
+        configuration.setDatabase(redisProperties.getDatabase());
         return new LettuceConnectionFactory(configuration);
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate(){
+    public RedisTemplate<String, String> redisTemplate(RedisProperties redisProperties){
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setConnectionFactory(redisConnectionFactory(redisProperties));
         return redisTemplate;
     }
 }
