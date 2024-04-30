@@ -3,6 +3,7 @@ package com.t3t.apigateway.config;
 import com.t3t.apigateway.keymanager.properties.SecretKeyProperties;
 import com.t3t.apigateway.keymanager.service.SecretKeyManagerService;
 import com.t3t.apigateway.property.RedisProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableRedisRepositories
+@Slf4j
 public class RedisConfig {
     @Bean
     public RedisProperties redisProperties(SecretKeyManagerService secretKeyManagerService,
@@ -22,6 +24,7 @@ public class RedisConfig {
                                            Environment environment){
 
         String activeProfile = environment.getActiveProfiles()[0];
+        String activeProfileSuffix = activeProfile.equals("prod") ? "" : "_" + activeProfile;
 
         return RedisProperties.builder()
                 .host(secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisIpAddressKeyId()))

@@ -5,7 +5,6 @@ import com.t3t.apigateway.keymanager.properties.SecretKeyProperties;
 import com.t3t.apigateway.keymanager.service.SecretKeyManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +37,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void databaseIpAddressLoadTest() {
 
         // when & then
@@ -55,7 +54,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void databasePortLoadTest() {
 
         // when & then
@@ -72,7 +71,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void databaseNameLoadTest() {
 
         // when & then
@@ -89,7 +88,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void databaseUsernameLoadTest() {
 
         // when & then
@@ -107,7 +106,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void databasePasswordLoadTest() {
         Assertions.assertDoesNotThrow(() -> secretKeyManagerService.getSecretValue(secretKeyProperties.getDatabasePasswordKeyId()));
         String value = secretKeyManagerService.getSecretValue(secretKeyProperties.getDatabasePasswordKeyId());
@@ -122,10 +121,12 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void jwtSecretKeyLoadTest() {
         Assertions.assertDoesNotThrow(() -> secretKeyManagerService.getSecretValue(secretKeyProperties.getJwtSecretKeyId()));
         String value = secretKeyManagerService.getSecretValue(secretKeyProperties.getJwtSecretKeyId());
+        log.info(value);
+        log.info(value.toString());
 
         Assertions.assertNotNull(value);
     }
@@ -136,12 +137,15 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void redisIpAddressLoadTest() {
         Assertions.assertDoesNotThrow(() -> secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisIpAddressKeyId()));
 
         String value = secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisIpAddressKeyId());
         Assertions.assertNotNull(value);
+
+
+        log.info(value);
 
         log.info("redisIpAddress => {}", value);
     }
@@ -152,7 +156,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void redisPortLoadTest() {
         Assertions.assertDoesNotThrow(() -> secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisPortKeyId()));
 
@@ -168,7 +172,7 @@ class SecretKeyManagerTest {
      * @author woody35545(구건모)
      */
     @Test
-    @Disabled
+//    @Disabled
     void redisPasswordLoadTest() {
         Assertions.assertDoesNotThrow(() -> secretKeyManagerService.getSecretValue(secretKeyProperties.getRedisPasswordKeyId()));
 

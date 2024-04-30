@@ -2,3 +2,7 @@ eureka:
   client:
     service-url:
       defaultZone: ${eurekaServiceUrlDefaultZone}
+
+spring:
+  auth:
+    host: ${authHost}

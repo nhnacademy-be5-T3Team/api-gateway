@@ -3,8 +3,6 @@ name: CI / CD
 on:
   push:
     branches: [ "master", "develop" ]
-  pull_request:
-    branches: [ "master", "develop" ]
     
 jobs:
   ci-cd:
@@ -13,6 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Prepare secure key manager certKey file
+
       run: |  
         echo ${{ secrets.SECURE_KEY_MANAGER_CERT_KEY }} > t3team-skm-cert.txt
         mkdir src/main/resources/key

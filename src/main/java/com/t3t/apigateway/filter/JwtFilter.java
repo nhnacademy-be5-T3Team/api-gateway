@@ -1,9 +1,8 @@
 package com.t3t.apigateway.filter;
 
-import com.t3t.apigateway.common.JwtUtils;;
+import com.t3t.apigateway.common.JwtUtils;
 import com.t3t.apigateway.exception.TokenNotAuthenticatedExceptions;
 import com.t3t.apigateway.exception.TokenNotExistExceptions;
-import com.t3t.apigateway.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
