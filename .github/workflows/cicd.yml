@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Prepare secure key manager certKey file
-      run:
+      run: |
         echo ${{ secrets.SECURE_KEY_MANAGER_CERT_KEY }} > t3team-skm-cert.txt
         mkdir src/main/resources/key
         base64 -d t3team-skm-cert.txt > src/main/resources/key/t3team-skm-cert.p12
