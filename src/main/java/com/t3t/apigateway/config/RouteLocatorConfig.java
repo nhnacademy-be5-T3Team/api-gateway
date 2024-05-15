@@ -1,11 +1,6 @@
 package com.t3t.apigateway.config;
 
-import com.t3t.apigateway.common.JwtUtils;
-import com.t3t.apigateway.filter.GlobalHttpReIssueFilter;
 import com.t3t.apigateway.filter.JwtFilter;
-import com.t3t.apigateway.service.TokenService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -39,8 +34,11 @@ public class RouteLocatorConfig {
                 .route("auth-service", r -> r.path("/t3t/auth/**")
                         .filters(f -> f.rewritePath("/t3t/auth/(?<segment>.*)", "/${segment}"))
                         .uri("lb://AUTH-SERVICE"))
-                .route("coupon-service", r -> r.path("/coupon/**")
-                        .filters(f -> f.rewritePath("/coupon/(?<segment>.*)", "/${segment}"))
+                .route("coupon-service-secrets", r-> r.path("/at/coupon/**")
+                        .filters(f->f.filter(jwtFilter))
+                        .uri("lb://COUPON-SERVICE"))
+                .route("coupon-service", r -> r.path("/t3t/coupon/**")
+                        .filters(f -> f.rewritePath("/t3t/coupon/(?<segment>.*)", "/${segment}"))
                         .uri("lb://COUPON-SERVICE"))
                 .build();
     }
